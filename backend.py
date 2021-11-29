@@ -1,4 +1,5 @@
 import os
+import pathlib
 import boto3
 from flask import Flask
 from flask import request
@@ -15,36 +16,13 @@ CLIENT = boto3.client(
     aws_secret_access_key=os.environ["SECRET_KEY"],
 )
 
-
-PAGE = """
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>S3 Form</title>
-</head>
-<body>
-    <form action="/save_to_s3" method="post">
-        <p>
-            <input type="text" name="subject" id="subject"><br/>
-        </p>
-        <p>
-            <textarea name="message" id="message" cols="30" rows="10"></textarea><br/>
-        </p>
-        <p>
-            <input type="submit" value="Send">
-        </p>
-    </form>
-</body>
-</html>
-"""
+FRONT_PATH = pathlib.Path(__file__).parent.absolute()
 
 
 @app.route("/", methods=["GET"])
 def get_form():
-    return PAGE
+    with open(FRONT_PATH / "page.html") as page_file:
+        return page_file.read()
 
 
 @app.route("/save_to_s3", methods=["POST"])
